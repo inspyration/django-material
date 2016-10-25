@@ -291,7 +291,7 @@ def admin_related_field_urls(bound_field):
     url_params = '&'.join("%s=%s" % param for param in [
         (TO_FIELD_VAR, rel_widget.rel.get_related_field().name),
         (IS_POPUP_VAR, 1),
-    ])
+    ] + list(bound_field.field.get_limit_choices_to().items()))
 
     context = {
         'widget': rel_widget.widget.render(bound_field.name, bound_field.value()),
