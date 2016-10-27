@@ -50,7 +50,7 @@ def get_app_list(request):
 
     for model, model_admin in site._registry.items():
         app_label = model._meta.app_label
-        has_module_perms = user.has_module_perms(app_label)
+        has_module_perms = model_admin.has_module_permission(request) and user.has_module_perms(app_label)
 
         if has_module_perms:
             perms = model_admin.get_model_perms(request)
