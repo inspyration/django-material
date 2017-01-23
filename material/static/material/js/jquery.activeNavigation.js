@@ -24,7 +24,7 @@
 
         if (hrefs.length) {
             hrefs.sort(function(a,b){
-                return a.attr("href").length < b.attr("href").length;
+                return b.attr("href").length - a.attr("href").length;
             })
             var href = hrefs[0];
             for(var i=1; i< hrefs.length; i++) {
@@ -33,12 +33,9 @@
                 }
             }
             $(selector).find("li").removeClass("active");
-            $(selector).find("a").removeClass("active");
-            href.closest('li').addClass("active");
-            href.closest('div').closest('li').addClass('active');
             href.parents('li').addClass('active');
-            href.closest('li.header').find('.collapsible-header:first').addClass("active");
-            href.closest('li.header').find('.collapsible-body:first').css("display", "block");
+            href.parent('li').closest('.collapsible-body').css('display', "block");
+            href.parent('li').closest('.collapsible-body').parent('li').addClass('active');
         }
     };
 })(jQuery);

@@ -1,3 +1,36 @@
+0.11.0 2016-12-13 - Beta
+------------------------
+
+* Forms - Default theme secondary color changed to green
+* Frontend - Added `startmodule` management command
+* Frontend - Added list view actions (PRO)
+* Frontend - Integration with django-filters (PRO)
+* Frontend - Active page highlight fixed under IE/Safari
+* Admin - Fix ManyToMany field height
+* Admin - Fix change form markup
+
+0.10.1 2016-11-10 - Beta
+------------------------
+
+- Fix admin raw_id select on django 1.10
+
+
+0.10.0 2016-10-31 - Beta
+------------------------
+
+- Forms - Upgrade to Materialize CSS 0.97.8
+- Frontend, Admin - New sidebar with user photo
+- Frontend, Admin - Massive CSS/JS/HTML cleanup
+- Frontend, Admin - Serve minfied js/css in the production mode
+- Frontend - Switch from unsupported PJAX to Turbolinks!
+- Admin - Use `model_admin.has_module_permission()` permission check
+
+0.9.2 2016-10-27 - Beta
+-----------------------
+
+- Fix admin read-only field for simple values
+
+
 0.9.1 2016-10-18 - Beta
 -----------------------
 
@@ -11,7 +44,7 @@
 - Forms - Add input[type=range] support
 - Forms - Fix initial label position for datetime field with value
 - Forms - Fix initial label position for number field with zero as inital value
-- Forms - Fix CSS vulnerability in input fields.
+- Forms - Fix XSS vulnerability in input fields.
 - Forms - Fix CSS inclusion default template
 - Frontend - Fix module delete
 - Frontend - Add CRUD views and viewset

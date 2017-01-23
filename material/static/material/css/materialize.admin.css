@@ -18,18 +18,17 @@ th {
     padding-left: 40px; } }
 
 /* ALERTS */
-.toast.alert-success {
-  background-color: #43a047; }
-
-.toast.alert-info {
-  background-color: #0277bd; }
-
-.toast.alert-warning {
-  background-color: #ef6c00;
-  color: #fff; }
-
-.toast.alert-error {
-  background-color: #bf360c; }
+.toast a {
+  color: white; }
+  .toast a.alert-success {
+    background-color: #43a047; }
+  .toast a.alert-info {
+    background-color: #0277bd; }
+  .toast a.alert-warning {
+    background-color: #ef6c00;
+    color: #fff; }
+  .toast a.alert-error {
+    background-color: #bf360c; }
 
 /* DEFAULT ICONS */
 .admin-appicon:before {
@@ -41,6 +40,8 @@ th {
 /* SIDEBAR */
 .side-nav.fixed {
   overflow-y: hidden; }
+  .side-nav.fixed .userView {
+    min-height: 175px; }
   .side-nav.fixed > li.last {
     padding-bottom: 58px; }
   .side-nav.fixed .collapsible-body li a {
@@ -124,7 +125,7 @@ nav.breadcrumbs {
           font-size: 48px; }
         .app-list .app .card .app-item a {
           background: #f5f5f5;
-          color: #80c883;
+          color: #686868;
           display: block;
           border-radius: 4px;
           padding: 35px 0px;
@@ -313,7 +314,7 @@ nav.breadcrumbs {
 
 .change-form .multiselect .selector-add,
 .change-form .multiselect .selector-remove {
-  background-color: #80c883; }
+  background-color: #686868; }
 
 @media only screen and (min-width: 601px) {
   .change-form .multiselect {
@@ -336,8 +337,9 @@ nav.breadcrumbs {
       padding-top: 40px; }
     .change-form .multiselect .selector-chosen {
       width: calc(50% - 30px);
-      width: -moz-calc(50% - 30px) select;
-        width-height: 120px; } }
+      width: -moz-calc(50% - 30px); }
+      .change-form .multiselect .selector-chosen select {
+        height: 120px; } }
 
 @media only screen and (max-width: 600px) {
   .change-form .multiselect .selector-available select {

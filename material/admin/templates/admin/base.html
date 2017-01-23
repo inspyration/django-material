@@ -32,15 +32,21 @@
     <body class="{% if is_popup %}popup{% endif %}">
         <header>
             {% block header %}
-            {% if user.is_authenticated  and not is_popup %}
+            {% if not is_popup %}
             <ul id="slide-out" class="side-nav fixed">
                 {% block sidenav_header %}
                 <li>
                     <div class="userView">
-                        <img class="background" src="{% static 'material/imgs/sidenav.png' %}">
-                        <a href="#!user"><img class="circle" src="{% static 'material/imgs/user.png' %}"></a>
-                        <a href="#!name"><span class="white-text name">{{ request.user.get_username|title }}</span></a>
-                        <a href="#!email"><span class="white-text email">{{ request.user.email }}</span></a>
+                        <img class="background" src="{% static 'material/imgs/sidenav.svg' %}">
+                        {% block userphoto %}
+                        {% if user.photo.url %}
+                        <a href="#"><img class="circle" src="{{ user.photo.url %}"></a>
+                        {% else %}
+                        <a href="#"><img class="circle" src="{% static 'material/imgs/user.png' %}"></a>
+                        {% endif %}
+                        {% endblock %}
+                        <a href="#"><span class="white-text name">{{ request.user.get_username|title }}</span></a>
+                        <a href="#"><span class="white-text email">{{ request.user.email }}</span></a>
                     </div>
                 </li>
                 {% endblock %}
@@ -73,7 +79,6 @@
         </header>
         <main>
             {% block main %}
-                {% if user.is_authenticated %}
                 {% block topbar %}
                 <nav class="topbar">
                     <div class="nav-wrapper">
@@ -94,7 +99,11 @@
                             {% if user.has_usable_password %}
                                 <li><a href="{% url 'admin:password_change' %}">{% trans 'Change password' %}</a></li>
                             {% endif %}
-                            <li><a href="{% url 'admin:logout' %}"><i class="material-icons right">exit_to_app</i>{% trans 'Log out' %}</a></li>
+                            {% if user.is_authenticated %}
+                            <li><a href="{% url 'admin:logout' %}" data-turbolinks="false"><i class="material-icons right">exit_to_app</i>{% trans "Logout" %}</a></li>
+                            {% else %}
+                            <li><a href="{% url 'admin:login' %}" data-turbolinks="false"><i class="material-icons right">lock_open</i>{% trans "Login" %}</a></li>
+                            {% endif %}
                             {% endblock %}
                         </ul>
                     </div>
@@ -109,7 +118,6 @@
                 </nav>
                 {% endif %}
                 {% endblock %}
-                {% endif %}
                 <div class="content">
                     {% block content %}{% endblock %}
                 </div>

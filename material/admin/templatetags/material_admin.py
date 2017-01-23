@@ -46,7 +46,6 @@ site = get_admin_site()
 def get_app_list(request):
     """Django 1.8 way to get application registred at default Admin Site."""
     app_dict = {}
-    user = request.user
 
     for model, model_admin in site._registry.items():
         app_label = model._meta.app_label

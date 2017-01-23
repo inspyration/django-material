@@ -25,7 +25,9 @@ th {
 }
 
 /* ALERTS */
-.toast {
+.toast a {
+    color: white;
+
     &.alert-success {
         background-color: #43a047;
     }
@@ -57,6 +59,10 @@ th {
 .side-nav.fixed {
     // managed by perfect-scrollbar
     overflow-y: hidden;
+
+    .userView {
+        min-height: 175px;
+    }
 
     // fix for chrome scrolling bug
     > li.last {
@@ -486,7 +492,7 @@ nav.breadcrumbs {
 
             .selector-chosen {
                 width: calc(50% - 30px);
-                width: -moz-calc(50% - 30px)
+                width: -moz-calc(50% - 30px);
 
                 select {
                     height: 120px;
