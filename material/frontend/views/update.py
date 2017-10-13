@@ -1,5 +1,9 @@
+from __future__ import unicode_literals
+
+from django.contrib.auth import get_permission_codename
 from django.core.urlresolvers import reverse
 from django.views import generic
+from django.utils.translation import ugettext_lazy as _
 
 from .mixins import MessageUserMixin, ModelViewMixin
 
@@ -16,7 +20,12 @@ class UpdateModelView(MessageUserMixin, ModelViewMixin, generic.UpdateView):
         """
         if self.viewset is not None:
             return self.viewset.has_change_permission(request, obj)
-        raise NotImplementedError('Viewset is not provided')
+
+        # default lookup for the django permission
+        opts = self.model._meta
+        codename = get_permission_codename('change', opts)
+        return request.user.has_perm(
+            '{}.{}'.format(opts.app_label, codename), obj=obj)
 
     def get_success_url(self):
         """Redirect back to the detail view if no `success_url` is configured."""
@@ -28,4 +37,4 @@ class UpdateModelView(MessageUserMixin, ModelViewMixin, generic.UpdateView):
         return super(ModelViewMixin, self).get_success_url()
 
     def message_user(self):
-        self.success('The {name} "{link}" was changed successfully.')
+        self.success(_('The {name} "{link}" was changed successfully.'))

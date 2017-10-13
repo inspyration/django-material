@@ -1,10 +1,14 @@
+from django.utils.translation import ugettext_lazy as _
+
 from material import Layout, Row, Fieldset
 from material.frontend.views import ModelViewSet
+
 from . import models
 
 
 class CityViewSet(ModelViewSet):
     model = models.City
+    ordering = ['-country', 'name']
     list_display = ('name', 'country', 'population')
 
 
@@ -15,20 +19,18 @@ class ContinentViewSet(ModelViewSet):
         'area', 'population', )
     layout = Layout(
         'name',
-        Fieldset('Details',
+        Fieldset(_('Details'),
                  'area',
                  Row('oceans', 'hemisphere'),
                  Row('population', 'population_density')),
-        Fieldset('Fun facts',
+        Fieldset(_('Fun facts'),
                  Row('largest_country', 'biggest_mountain'),
                  Row('biggest_city', 'longest_river'))
     )
 
     def surrounded_oceans(self, contintent):
         return ', '.join(ocean.name for ocean in contintent.oceans.all())
-
-    def countries_count(self, contintent):
-        return contintent.countries.count()
+    surrounded_oceans.short_description = _('surrounded oceans')
 
 
 class CountryViewSet(ModelViewSet):
@@ -46,6 +48,7 @@ class CountryViewSet(ModelViewSet):
     def became_independent_in_20_century(self, country):
         if country.independence_day:
             return 1900 <= country.independence_day.year <= 2000
+    became_independent_in_20_century.short_description = _('became independent in XX century')
 
 
 class OceanViewSet(ModelViewSet):
@@ -65,3 +68,4 @@ class SeaViewSet(ModelViewSet):
 
     def sea_area(self, sea):
         return None if sea.area == 0 else sea.area
+    sea_area.short_description = _('sea area')

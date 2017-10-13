@@ -1,3 +1,4 @@
+import django
 import os
 import sys
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -44,6 +45,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 SITE_ID = 1
@@ -105,7 +107,11 @@ class DisableMigrations(object):
     def __getitem__(self, item):
         return "notmigrations"
 
-MIGRATION_MODULES = DisableMigrations()
+if django.VERSION <= (1, 8):
+    MIGRATION_MODULES = DisableMigrations()
+else:
+    MIGRATION_MODULES = []
+
 
 
 # Internationalization

@@ -24,7 +24,7 @@ from ..base import AdminReadonlyField, Inline
 register = Library()
 
 
-CL_VALUE_RE = re.compile('value="(.*)\"')
+CL_VALUE_RE = re.compile('value=\"([^"]*)\"')
 
 
 def get_admin_site():
@@ -44,7 +44,7 @@ site = get_admin_site()
 
 @register.assignment_tag
 def get_app_list(request):
-    """Django 1.8 way to get application registred at default Admin Site."""
+    """Django 1.8 way to get application registered at default Admin Site."""
     app_dict = {}
 
     for model, model_admin in site._registry.items():
@@ -66,7 +66,8 @@ def get_app_list(request):
                     'name': capfirst(model._meta.verbose_name_plural),
                     'object_name': model._meta.object_name,
                     'perms': perms,
-                    'icon': mark_safe(model_icon)
+                    'icon': mark_safe(model_icon),
+                    'active': False,
                 }
                 if perms.get('change', False):
                     try:
@@ -96,6 +97,7 @@ def get_app_list(request):
                         'app_url': reverse('admin:app_list', kwargs={'app_label': app_label}, current_app=site.name),
                         'has_module_perms': has_module_perms,
                         'models': [model_dict],
+                        'active': False,
                     }
 
                     if request.path.startswith(app_dict[app_label]['app_url']):
@@ -114,7 +116,7 @@ def get_app_list(request):
 
 @register.assignment_tag
 def fieldset_layout(adminform, inline_admin_formsets):
-    """Generate materila layout for admin inlines."""
+    """Generate material layout for admin inlines."""
     layout = getattr(adminform.model_admin, 'layout', None)
     if layout is not None:
         for element in layout.elements:
@@ -162,7 +164,7 @@ def fieldset_layout(adminform, inline_admin_formsets):
 @register.simple_tag
 def paginator_number(cl, i):
     """Generate an individual page index link in a paginated list."""
-    current_page = cl.paginator.page(cl.page_num+1)
+    current_page = cl.paginator.page(cl.page_num + 1)
     if i == 'prev':
         if current_page.has_previous():
             return format_html('<li class="disabled"><a href="{}"><i class="material-icons">chevron_left</i></a></li>',
@@ -172,7 +174,7 @@ def paginator_number(cl, i):
     elif i == 'next':
         if current_page.has_next():
             return format_html(
-                '<li class="disabled"><a href="{}"><i class="material-icons">chevron_right</i></i></a></li>',
+                '<li class="disabled"><a href="{}"><i class="material-icons">chevron_right</i></a></li>',
                 cl.get_query_string({PAGE_VAR: current_page.next_page_number()}))
         else:
             return format_html(
@@ -181,7 +183,7 @@ def paginator_number(cl, i):
         return mark_safe('<li class="disabled"><a href="#" onclick="return false;">...</a></li>')
     elif i == cl.page_num:
         return format_html('<li class="active"><a href="#!">{0}</a></li> ',
-                           i+1,
+                           i + 1,
                            cl.get_query_string({PAGE_VAR: i}))
     else:
         return format_html('<li><a href="{0}"{1}>{2}</a></li>',

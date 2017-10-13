@@ -13,16 +13,15 @@ SECRET_KEY = 'fn4_(9z4f8w+3!&(j2x88^ca0m0=s+aj$jp^^cf^3h740xhr3='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 INTERNAL_IPS = [
-     '127.0.0.1'
+    '127.0.0.1'
 ]
 
 # Application definition
 DEV_APPS = (
     'autofixture',
-    # 'debug_toolbar',
     'template_debug',
 )
 
@@ -42,7 +41,7 @@ INSTALLED_APPS = (
     'django.contrib.humanize',
 
     # test apps
-    'demo.examples.accounting',
+    # 'demo.examples.accounting',
     'demo.examples.employees.apps.EmployeesConfig',
     'demo.tests.integration',
 
@@ -89,6 +88,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.i18n',
                 'material.frontend.context_processors.modules',
             ],
             'debug': True,
@@ -164,6 +164,10 @@ EMAIL_HOST_USER = os.environ.get('EMAIL')
 EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_PASSWORD')
 EMAIL_PORT = 587
 
+
+if os.environ.get('DEBUG_TOOLBAR'):
+    INSTALLED_APPS += ('debug_toolbar',)
+    MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware', )
 
 try:
     from deploy.local_settings import *  # NOQA

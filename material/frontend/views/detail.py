@@ -1,18 +1,22 @@
+from __future__ import unicode_literals
+
+from django.contrib.auth import get_permission_codename
 from django.core.urlresolvers import reverse
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.db import models
+from django.http import Http404
 from django.views import generic
 
 
 class DetailModelView(generic.DetailView):
-    """Think wrapper for `generic.DetailView`."""
+    """Thin wrapper for `generic.DetailView`."""
 
     viewset = None
 
     def get_object_data(self):
         """List of object fields to display.
 
-        Choice fields values are exapanded to readable choice label.
+        Choice fields values are expanded to readable choice label.
         """
         for field in self.object._meta.fields:
             if isinstance(field, models.AutoField):
@@ -20,14 +24,14 @@ class DetailModelView(generic.DetailView):
             elif field.auto_created:
                 continue
             else:
-                choice_display_attr = "get_{}_display".format(field.get_attname())
+                choice_display_attr = "get_{}_display".format(field.name)
             if hasattr(self.object, choice_display_attr):
                 value = getattr(self.object, choice_display_attr)()
             else:
-                value = getattr(self.object, field.get_attname())
+                value = getattr(self.object, field.name)
 
-                if value is not None:
-                    yield (field.verbose_name.title(), value)
+            if value is not None:
+                yield (field.verbose_name.title(), value)
 
     def has_view_permission(self, request, obj):
         """Object view permission check.
@@ -36,7 +40,16 @@ class DetailModelView(generic.DetailView):
         """
         if self.viewset is not None:
             return self.viewset.has_view_permission(request, obj)
-        raise NotImplementedError('Viewset is not provided')
+
+        # default lookup for the django permission
+        opts = self.model._meta
+        codename = get_permission_codename('view', opts)
+        view_perm = '{}.{}'.format(opts.app_label, codename)
+        if request.user.has_perm(view_perm):
+            return True
+        elif request.user.has_perm(view_perm, obj=obj):
+            return True
+        return self.has_change_permission(request, obj=obj)
 
     def has_change_permission(self, request, obj):
         """Object chane permission check.
@@ -47,7 +60,14 @@ class DetailModelView(generic.DetailView):
         """
         if self.viewset is not None:
             return self.viewset.has_change_permission(request, obj)
-        raise NotImplementedError('Viewset is not provided')
+
+        # default lookup for the django permission
+        opts = self.model._meta
+        codename = get_permission_codename('change', opts)
+        change_perm = '{}.{}'.format(opts.app_label, codename)
+        if request.user.has_perm(change_perm):
+            return True
+        return request.user.has_perm(change_perm, obj=obj)
 
     def has_delete_permission(self, request, obj):
         """Object delete permission check.
@@ -56,13 +76,29 @@ class DetailModelView(generic.DetailView):
         """
         if self.viewset is not None:
             return self.viewset.has_delete_permission(request, obj)
-        raise NotImplementedError('Viewset is not provided')
+
+        # default lookup for the django permission
+        opts = self.model._meta
+        codename = get_permission_codename('delete', opts)
+        delete_perm = '{}.{}'.format(opts.app_label, codename)
+        if request.user.has_perm(delete_perm):
+            return True
+        return request.user.has_perm(delete_perm, obj=obj)
 
     def get_object(self):
-        """Retrive the object.
+        """Retrieve the object.
 
         Check object view permission at the same time.
         """
+        queryset = self.get_queryset()
+        model = queryset.model
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        if pk is not None:
+            try:
+                self.kwargs[self.pk_url_kwarg] = model._meta.pk.to_python(pk)
+            except (ValidationError, ValueError):
+                raise Http404
+
         obj = super(DetailModelView, self).get_object()
         if not self.has_view_permission(self.request, obj):
             raise PermissionDenied

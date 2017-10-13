@@ -20,7 +20,9 @@ Material design for Django Forms and Admin. Template driven.
    :alt: Join the chat at https://gitter.im/viewflow/django-material
    :target: https://gitter.im/viewflow/django-material?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge
 
-Django-Material works with Django 1.8/1.9/1.10
+Django-Material works with Django 1.8/1.9/1.10/1.11
+
+Django-Material 1.x branch going to be supported till Django 1.8 lifetime (April 2018)
 
 Tested with:
 
@@ -30,20 +32,41 @@ Tested with:
 Overview
 ========
 
-- Forms_ - New way to render django forms
+- Forms - New way to render django forms
 
   * Strong python/html code separation
   * Easy redefinition of particular fields rendering
   * Complex form layout support
 
-- Frontend_ - Quick starter template for modular applications development
+- Frontend - Quick starter template for modular applications development
 
-- Admin_ - Material-designed django admin
-
-Demo: http://forms.viewflow.io/
+- Admin - Material-designed django admin
 
 .. image:: .screen.png
    :width: 400px
+
+
+Demo
+====
+
+http://forms.viewflow.io/
+
+To checkout and run open source demo version localy, you need to have
+`git <https://git-scm.com/>`_ and `tox
+<https://tox.readthedocs.io/en/latest/>`_ tools installed.
+
+.. code:: bash
+
+    git clone https://github.com/viewflow/django-material.git
+    cd django-material
+
+    TOXENV=py36-dj111 tox -- python manage.py migrate --settings=demo.settings
+    TOXENV=py36-dj111 tox -- python manage.py loaddata demo/fixtures/* --settings=demo.settings
+    TOXENV=py36-dj111 tox -- python manage.py runserver --settings=demo.settings
+
+Then you can go to http://127.0.0.1:8000/integration/ and login with
+`admin:admin` username and password to the demo site.
+
 
 Documentation
 =============
@@ -55,19 +78,19 @@ License
 
 Django Material is an Open Source project licensed under the terms of the `BSD3 license <https://github.com/viewflow/django-material/blob/master/LICENSE.txt>`_
 
-Django Material Pro has a commercial-friendly license and distributed as part of Viewflow Pro
+Django Material Pro with additional features has a commercial-friendly license. Check http:viewflow.io/pro/ for details.
 
 
 Changelog
 =========
 
-0.11.0 2016-12-13 - Beta
-------------------------
+1.0.0 2017-05-29 - Stable
+-------------------------
 
-* Forms - Default theme secondary color changed to green
-* Frontend - Added `startmodule` management command
-* Frontend - Added list view actions (PRO)
-* Frontend - Integration with django-filters (PRO)
-* Frontend - Active page highlight fixed under IE/Safari
-* Admin - Fix ManyToMany field height
-* Admin - Fix change form markup
+- Django 1.11 support
+- Update MaterializeCSS to 0.98.2
+- Fix missing badges in shipped MaterializeCSS build
+- Localization added: German/French/Spainish/Korean/Chinese
+- Forms - Fix allows to use html in a `help_text` of widgets
+- Frontend - Improved Login/Logout/403/404/500 service screen templates
+- Admin - fix application list layout

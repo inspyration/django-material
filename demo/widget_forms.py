@@ -4,6 +4,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from django.contrib.auth.models import Permission
+from django.core.validators import MaxLengthValidator
 from django.core.files import File
 from django.forms.extras.widgets import SelectDateWidget
 from django.template import Template
@@ -438,13 +439,16 @@ class TextareaForm(forms.Form):
     field1 = forms.CharField(help_text='default', widget=forms.Textarea)
     field2 = forms.CharField(help_text='initial value', widget=forms.Textarea,
                              initial="Initial value")
-    field3 = forms.CharField(help_text='length between 10-100', widget=forms.Textarea,
+    field3 = forms.CharField(help_text='hard length between 10-100', widget=forms.Textarea,
                              min_length=10, max_length=100)
-    field4 = forms.CharField(help_text='prefix', widget=forms.Textarea)
+    field4 = forms.CharField(help_text='soft max length 150', widget=forms.Textarea,
+                             validators=[MaxLengthValidator(150)])
+    field5 = forms.CharField(help_text='prefix', widget=forms.Textarea)
 
     template = Template("""
     {% form %}
-        {% part form.field4 prefix %}<i class="material-icons prefix">insert_invitation</i>{% endpart %}
+        {% attr form.field4 'widget' length %}150{% endattr %}
+        {% part form.field5 prefix %}<i class="material-icons prefix">insert_invitation</i>{% endpart %}
     {% endform %}
     """)
 
@@ -463,7 +467,7 @@ class RadioSelectForm(forms.Form):
     field3 = forms.TypedChoiceField(
         help_text='cource to int', choices=CHOICES, widget=forms.RadioSelect, coerce=int)
     field4 = forms.ModelChoiceField(
-        help_text='model choice radioselect with to_field_name=codename',  widget=forms.RadioSelect,
+        help_text='model choice radioselect with to_field_name=codename', widget=forms.RadioSelect,
         queryset=Permission.objects.filter(content_type__app_label='frontend'),
         to_field_name='codename', empty_label=None)
 

@@ -1,7 +1,12 @@
+from __future__ import unicode_literals
+
+from django.contrib.auth import get_permission_codename
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.core.urlresolvers import reverse
 from django.db import router
 from django.db.models.deletion import Collector
-from django.core.exceptions import PermissionDenied
+from django.http import Http404
+from django.utils.translation import ugettext_lazy as _
 from django.views import generic
 
 from .mixins import MessageUserMixin
@@ -19,7 +24,14 @@ class DeleteModelView(MessageUserMixin, generic.DeleteView):
         """
         if self.viewset is not None:
             return self.viewset.has_delete_permission(request, obj)
-        raise NotImplementedError('Viewset is not provided')
+
+        # default lookup for the django permission
+        opts = self.model._meta
+        codename = get_permission_codename('delete', opts)
+        delete_perm = '{}.{}'.format(opts.app_label, codename)
+        if request.user.has_perm(delete_perm):
+            return True
+        return request.user.has_perm(delete_perm, obj=obj)
 
     def _get_deleted_objects(self):
         collector = Collector(using=router.db_for_write(self.object))
@@ -35,10 +47,19 @@ class DeleteModelView(MessageUserMixin, generic.DeleteView):
         return super(DeleteModelView, self).get_context_data(**kwargs)
 
     def get_object(self):
-        """Retrive the object for delete.
+        """Retrieve the object for delete.
 
         Check object delete permission at the same time.
         """
+        queryset = self.get_queryset()
+        model = queryset.model
+        pk = self.kwargs.get(self.pk_url_kwarg)
+        if pk is not None:
+            try:
+                self.kwargs[self.pk_url_kwarg] = model._meta.pk.to_python(pk)
+            except (ValidationError, ValueError):
+                raise Http404
+
         obj = super(DeleteModelView, self).get_object()
         if not self.has_object_permission(self.request, obj):
             raise PermissionDenied
@@ -75,4 +96,4 @@ class DeleteModelView(MessageUserMixin, generic.DeleteView):
         return response
 
     def message_user(self):
-        self.success('The {name} "{link}"  was deleted successfully.')
+        self.success(_('The {name} "{link}"  was deleted successfully.'))
