@@ -25,6 +25,7 @@ register = Library()
 
 
 CL_VALUE_RE = re.compile('value=\"([^"]*)\"')
+# CL_VALUE_RE = re.compile(r'value="(\w*)"')  # Fix bug sch
 
 
 def get_admin_site():
