@@ -196,6 +196,8 @@
 
     // Update dropdown on Add/Change popup close
     $(document).on('change', '.related-widget-wrapper select', function() {
-        $(this).not('.disabled').not('.material-ignore').material_select();
+        if(!$(this).siblings('input').hasClass('active')) {
+            $(this).not('.disabled').not('.material-ignore').material_select();
+        }
     });
 })(django.jQuery);
